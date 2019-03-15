@@ -2,7 +2,7 @@ from django.db import models
 
 class User(models.Model):
     name = models.CharField(max_length=200)
-    created_at = models.DateTimeField('user created at')
+    created_at = models.DateTimeField('user created at', auto_now_add=True)
 
 class Candidate(User):
     pass
