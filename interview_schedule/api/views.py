@@ -21,15 +21,26 @@ class CandidateAppointmentSlotViewSet(viewsets.ModelViewSet):
     API endpoint for appointment slots
     """
     serializer_class = CandidateAppointmentSlotSerializer
-    lookup_url_kwarg = "candidate_id"
-    queryset = CandidateAppointmentSlot.objects.all()
+    candidateIdParam = "candidateId"
+
+    def get_queryset(self):
+        queryset = CandidateAppointmentSlot.objects.all()
+        candidateId = self.request.query_params.get(self.candidateIdParam, None)
+        if candidateId is not None:
+            queryset = queryset.filter(candidate=candidateId)
+        return queryset
 
 
 class InterviewerAppointmentSlotViewSet(viewsets.ModelViewSet):
     """
     API endpoint for appointment slots
     """
-
     serializer_class = InterviewerAppointmentSlotSerializer
-    lookup_url_kwarg = "interviewer_id"
-    queryset = InterviewerAppointmentSlot.objects.all()
+    interviewerIdParam = "interviewerId"
+
+    def get_queryset(self):
+        queryset = InterviewerAppointmentSlot.objects.all()
+        interviewerId = self.request.query_params.get(self.interviewerIdParam, None)
+        if interviewerId is not None:
+            queryset = queryset.filter(candidate=interviewerId)
+        return queryset
