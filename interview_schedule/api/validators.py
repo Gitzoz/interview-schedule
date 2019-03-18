@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
 
-def beginIsBeforeEnd(data):
-    if data.begin > data.end:
+def beginIsBeforeEnd(begin, end):
+    if begin > end:
         raise serializers.ValidationError("begin must be before end.")
-    return data
+    return True
 
 
 def mustBeAtFullHour(value):

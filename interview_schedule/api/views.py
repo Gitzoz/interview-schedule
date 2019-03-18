@@ -22,14 +22,8 @@ class CandidateAppointmentSlotViewSet(viewsets.ModelViewSet):
     """
     serializer_class = CandidateAppointmentSlotSerializer
     lookup_url_kwarg = "candidate_id"
+    queryset = CandidateAppointmentSlot.objects.all()
 
-    def get_queryset(self):
-        canidate_id = self.kwargs.get(self.lookup_url_kwarg)
-        return CandidateAppointmentSlot.objects.filter(candidate = canidate_id)
-
-    def perform_create(self, serializer):
-        canidate_id = self.kwargs.get(self.lookup_url_kwarg)
-        serializer.save(candidate=canidate_id)
 
 class InterviewerAppointmentSlotViewSet(viewsets.ModelViewSet):
     """
@@ -38,11 +32,4 @@ class InterviewerAppointmentSlotViewSet(viewsets.ModelViewSet):
 
     serializer_class = InterviewerAppointmentSlotSerializer
     lookup_url_kwarg = "interviewer_id"
-
-    def get_queryset(self):
-        interviewer_id = self.kwargs.get(self.lookup_url_kwarg)
-        return InterviewerAppointmentSlot.objects.filter(interviewer = interviewer_id)
-
-    def perform_create(self, serializer):
-        interviewer_id = self.kwargs.get(self.lookup_url_kwarg)
-        serializer.save(interviewer=interviewer_id)
+    queryset = InterviewerAppointmentSlot.objects.all()
