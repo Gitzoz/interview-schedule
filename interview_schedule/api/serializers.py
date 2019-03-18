@@ -1,5 +1,7 @@
 from .models import *
 from rest_framework import serializers
+from .validators import *
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -13,7 +15,14 @@ class CandidateSerializer(UserSerializer):
 class InterviewerSerializer(UserSerializer):
     pass
 
-class InterviewerAppointmentSlotSerializer(serializers.HyperlinkedModelSerializer):
+class AppointmentSlotSerializer(serializers.HyperlinkedModelSerializer):
+    begin = serializers.DateTimeField(validators=[mustBeAtFullHour])
+    end = serializers.DateTimeField(validators=[mustBeAtFullHour])
+
+    def validate(self, data):
+        beginIsBeforeEnd(data)
+
+class InterviewerAppointmentSlotSerializer(AppointmentSlotSerializer):
     interviewer = serializers.PrimaryKeyRelatedField(queryset=Interviewer.objects.all())
     class Meta:
         model = InterviewerAppointmentSlot
@@ -21,7 +30,7 @@ class InterviewerAppointmentSlotSerializer(serializers.HyperlinkedModelSerialize
         read_only_fields = ('id',)
 
 
-class CandidateAppointmentSlotSerializer(serializers.HyperlinkedModelSerializer):
+class CandidateAppointmentSlotSerializer(AppointmentSlotSerializer):
     candidate = serializers.PrimaryKeyRelatedField(queryset=Candidate.objects.all())
     class Meta:
         model = CandidateAppointmentSlot

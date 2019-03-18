@@ -35,6 +35,7 @@ class InterviewerAppointmentSlotViewSet(viewsets.ModelViewSet):
     """
     API endpoint for appointment slots
     """
+
     serializer_class = InterviewerAppointmentSlotSerializer
     lookup_url_kwarg = "interviewer_id"
 
