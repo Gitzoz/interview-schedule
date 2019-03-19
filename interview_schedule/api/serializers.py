@@ -39,3 +39,13 @@ class CandidateAppointmentSlotSerializer(AppointmentSlotSerializer):
         model = CandidateAppointmentSlot
         fields = ('id', 'begin', 'end', 'candidate')
         read_only_fields = ('id',)
+
+
+def serializeAppointmentOverlapResult(data):
+    serialized = []
+    for dataTuple in data:
+        interviewerSlotSerializer = InterviewerAppointmentSlotSerializer(dataTuple[0])
+        candidateSlotsSerializer = CandidateAppointmentSlotSerializer(dataTuple[1], many=True)
+        serialized.append({'interviewer-slot': interviewerSlotSerializer.data, 'candidate-slots': candidateSlotsSerializer.data})
+
+    return serialized

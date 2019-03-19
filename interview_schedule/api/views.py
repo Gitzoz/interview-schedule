@@ -64,4 +64,4 @@ class AppointmentOverlapViewSet(viewsets.ViewSet):
             raise QueryParameterException('There was no candidate_id provided via query parameter')
 
         result = calculateAppointmentSlotOverlaps(interviewerId, candidateId)
-        return Response(result)
+        return Response(serializeAppointmentOverlapResult(result))
