@@ -1,5 +1,8 @@
 from .serializers import *
-from rest_framework import  viewsets
+from .exceptions import QueryParameterException
+from rest_framework import viewsets
+from rest_framework.response import Response
+from .appointmentslots import calculateAppointmentSlotOverlaps
 
 
 class CandidateViewSet(viewsets.ModelViewSet):
@@ -9,12 +12,14 @@ class CandidateViewSet(viewsets.ModelViewSet):
     queryset = Candidate.objects.all()
     serializer_class = CandidateSerializer
 
+
 class InterviewerViewSet(viewsets.ModelViewSet):
     """
     API endpoint for interviewers
     """
     queryset = Interviewer.objects.all()
     serializer_class = InterviewerSerializer
+
 
 class CandidateAppointmentSlotViewSet(viewsets.ModelViewSet):
     """
@@ -44,3 +49,19 @@ class InterviewerAppointmentSlotViewSet(viewsets.ModelViewSet):
         if interviewerId is not None:
             queryset = queryset.filter(candidate=interviewerId)
         return queryset
+
+
+class AppointmentOverlapViewSet(viewsets.ViewSet):
+    candidateIdParam = "candidateId"
+    interviewerIdParam = "interviewerId"
+
+    def list(self, request):
+        candidateId = request.query_params.get(self.candidateIdParam, None)
+        interviewerId = request.query_params.get(self.interviewerIdParam, None)
+        if interviewerId is None:
+            raise QueryParameterException('There was no interviewer_id provided via query parameter')
+        if candidateId is None:
+            raise QueryParameterException('There was no candidate_id provided via query parameter')
+
+        result = calculateAppointmentSlotOverlaps(interviewerId, candidateId)
+        return Response(result)
