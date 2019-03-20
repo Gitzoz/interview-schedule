@@ -1,10 +1,11 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.utils.timezone import make_aware
+from rest_framework import status
 from .models import *
 from .validators import *
+from .serializers import serializeAppointmentOverlapResult
 from .appointmentslots import calculateAppointmentSlotOverlaps
 import datetime
-
 
 
 class ValidationTestCase(TestCase):
@@ -29,6 +30,7 @@ class ValidationTestCase(TestCase):
 
 
 class AppointmentSlotOverlapTest(TestCase):
+    client = Client()
     begin1 = make_aware(datetime.datetime.strptime('2018-06-28T08:00', '%Y-%m-%dT%H:%M'))
     end1 = make_aware(datetime.datetime.strptime('2018-06-30T08:00', '%Y-%m-%dT%H:%M'))
     begin2 = make_aware(datetime.datetime.strptime('2018-06-28T08:00', '%Y-%m-%dT%H:%M'))
@@ -71,3 +73,17 @@ class AppointmentSlotOverlapTest(TestCase):
         overlap = calculateAppointmentSlotOverlaps([self.interviewerId1, self.interviewerId2], self.candidateId)
         expected = [(self.expectedCandidateSlot, [self.expectedInterviewer1Slot, self.expectedInterviewer2Slot])]
         self.assertEqual(overlap, expected)
+
+    def test_appointment_overlap_route_with_two_interviewerids(self):
+        interviewerIds = '{},{}'.format(self.interviewerId1, self.interviewerId2)
+        path = "/api/appointments/overlap/?interviewerIds={}&candidateId={}".format(interviewerIds, self.candidateId)
+        response = self.client.get(path)
+
+        expected = serializeAppointmentOverlapResult([(self.expectedCandidateSlot, [self.expectedInterviewer1Slot, self.expectedInterviewer2Slot])])
+        self.assertEqual(response.data, expected)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_appointment_overlap_route_with_missing_parameters(self):
+        response = self.client.get("/api/appointments/overlap/")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
