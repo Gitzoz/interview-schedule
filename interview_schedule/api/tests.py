@@ -36,21 +36,38 @@ class AppointmentSlotOverlapTest(TestCase):
     begin3 = make_aware(datetime.datetime.strptime('2018-06-27T08:00', '%Y-%m-%dT%H:%M'))
     end3 = make_aware(datetime.datetime.strptime('2018-06-30T08:00', '%Y-%m-%dT%H:%M'))
     candidateId = None
-    interviewerId = None
-    expectedInterviewerSlot = None
+    interviewerId1 = None
+    interviewerId2 = None
+    expectedInterviewer1Slot = None
+    expectedInterviewer2Slot = None
     expectedCandidateSlot = None
 
     def setUp(self):
-        interviewer = Interviewer.objects.create(name='Interviewer1')
-        self.interviewerId = interviewer.id
+        interviewer1 = Interviewer.objects.create(name='Interviewer1')
+        self.interviewerId1 = interviewer1.id
+
+        interviewer2 = Interviewer.objects.create(name='Interviewer2')
+        self.interviewerId2 = interviewer2.id
+
         candidate = Candidate.objects.create(name='Candidate1')
         self.candidateId = candidate.id
-        self.expectedInterviewerSlot = InterviewerAppointmentSlot.objects.create(begin=self.begin2, end=self.end2, interviewer=interviewer)
-        CandidateAppointmentSlot.objects.create(begin=self.begin1, end=self.end1, candidate=candidate)
-        self.expectedCandidateSlot = CandidateAppointmentSlot.objects.create(begin=self.begin2, end=self.end2, candidate=candidate)
-        CandidateAppointmentSlot.objects.create(begin=self.begin3, end=self.end3, candidate=candidate)
 
-    def test_only_the_overlapping_slot_is_shown(self):
-        overlap = calculateAppointmentSlotOverlaps(self.interviewerId, self.candidateId)
-        expected = [(self.expectedInterviewerSlot, [self.expectedCandidateSlot])]
+        self.expectedCandidateSlot = CandidateAppointmentSlot.objects.create(begin=self.begin2, end=self.end2, candidate=candidate)
+
+        InterviewerAppointmentSlot.objects.create(begin=self.begin1, end=self.end1, interviewer=interviewer1)
+        self.expectedInterviewer1Slot = InterviewerAppointmentSlot.objects.create(begin=self.begin2, end=self.end2, interviewer=interviewer1)
+        InterviewerAppointmentSlot.objects.create(begin=self.begin3, end=self.end3, interviewer=interviewer1)
+
+        InterviewerAppointmentSlot.objects.create(begin=self.begin1, end=self.end1, interviewer=interviewer2)
+        self.expectedInterviewer2Slot = InterviewerAppointmentSlot.objects.create(begin=self.begin2, end=self.end2, interviewer=interviewer2)
+        InterviewerAppointmentSlot.objects.create(begin=self.begin3, end=self.end3, interviewer=interviewer2)
+
+    def test_only_the_overlapping_slot_is_shown_with_one_interviewers(self):
+        overlap = calculateAppointmentSlotOverlaps([self.interviewerId1], self.candidateId)
+        expected = [(self.expectedCandidateSlot, [self.expectedInterviewer1Slot])]
+        self.assertEqual(overlap, expected)
+
+    def test_only_the_overlapping_slot_is_shown_with_two_interviewers(self):
+        overlap = calculateAppointmentSlotOverlaps([self.interviewerId1, self.interviewerId2], self.candidateId)
+        expected = [(self.expectedCandidateSlot, [self.expectedInterviewer1Slot, self.expectedInterviewer2Slot])]
         self.assertEqual(overlap, expected)

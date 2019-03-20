@@ -53,15 +53,20 @@ class InterviewerAppointmentSlotViewSet(viewsets.ModelViewSet):
 
 class AppointmentOverlapViewSet(viewsets.ViewSet):
     candidateIdParam = "candidateId"
-    interviewerIdParam = "interviewerId"
+    interviewerIdsParam = "interviewerIds"
 
     def list(self, request):
         candidateId = request.query_params.get(self.candidateIdParam, None)
-        interviewerId = request.query_params.get(self.interviewerIdParam, None)
-        if interviewerId is None:
-            raise QueryParameterException('There was no interviewer_id provided via query parameter')
+        interviewerIdParamValue = request.query_params.get(self.interviewerIdsParam, None)
+        if interviewerIdParamValue is None:
+            raise QueryParameterException('There was no interviewerIds provided via query parameter')
         if candidateId is None:
-            raise QueryParameterException('There was no candidate_id provided via query parameter')
+            raise QueryParameterException('There was no candidateId provided via query parameter')
 
-        result = calculateAppointmentSlotOverlaps(interviewerId, candidateId)
+        try:
+            interviewerIds = [ int(x) for x in interviewerIdParamValue.split(',') ]
+        except:
+            raise QueryParameterException('interviewerIds must be a comma separated list of integers')
+
+        result = calculateAppointmentSlotOverlaps(interviewerIds, candidateId)
         return Response(serializeAppointmentOverlapResult(result))

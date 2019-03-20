@@ -23,7 +23,7 @@ Start the development server:
 
 `python manage.py runserver`
 
-##Api
+## Api
 
 After starting the development server you have a browseable api under: 
 `http://127.0.0.1:8000/api/`
@@ -52,31 +52,40 @@ List all interviewer appointmentslots. You can filter with the query parameter `
 ## /api/interviewer/appointmentslots/<id: Int>
 Show appointmentslot with given id and interact with it.
 
-## appointments/overlap/?candidateId=<id: Int>&interviewerId=<id: Int>
+## /api/appointments/overlap/?candidateId=<id: Int>&interviewerIds=<id: Int>,<id: Int>
 Calculates appointment overlaps for an interviewer and candidate. 
 Both query parameter are mandatory!
 
-For each interviewer slot exists a list of candidate slots which lies within the interviewer slot. 
+For each candidate slot exists a list of interviewer slots which lies within the candidate slot. 
 
 Example response: 
 
 ```
 [
     {
-        "interviewer-slot": {
+        "candidate-slot": {
             "id": 1,
             "begin": "2018-06-28T08:00:00Z",
             "end": "2018-06-29T08:00:00Z",
-            "interviewer": 2
+            "candidate": 1
         },
-        "candidate-slots": [
+        "interviewer-slots": [
             {
                 "id": 3,
                 "begin": "2018-06-28T08:00:00Z",
                 "end": "2018-06-29T08:00:00Z",
-                "candidate": 1
+                "interviewer": 2
             }
         ]
+    },
+    {
+        "candidate-slot": {
+            "id": 6,
+            "begin": "2018-06-25T08:00:00Z",
+            "end": "2018-06-26T08:00:00Z",
+            "candidate": 1
+        },
+        "interviewer-slots": []
     }
 ]
 ```

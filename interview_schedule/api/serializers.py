@@ -44,8 +44,8 @@ class CandidateAppointmentSlotSerializer(AppointmentSlotSerializer):
 def serializeAppointmentOverlapResult(data):
     serialized = []
     for dataTuple in data:
-        interviewerSlotSerializer = InterviewerAppointmentSlotSerializer(dataTuple[0])
-        candidateSlotsSerializer = CandidateAppointmentSlotSerializer(dataTuple[1], many=True)
-        serialized.append({'interviewer-slot': interviewerSlotSerializer.data, 'candidate-slots': candidateSlotsSerializer.data})
+        interviewerSlotSerializer = InterviewerAppointmentSlotSerializer(dataTuple[1], many=True)
+        candidateSlotsSerializer = CandidateAppointmentSlotSerializer(dataTuple[0])
+        serialized.append({'candidate-slot': candidateSlotsSerializer.data, 'interviewer-slots': interviewerSlotSerializer.data})
 
     return serialized

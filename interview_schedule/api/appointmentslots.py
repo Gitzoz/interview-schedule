@@ -1,16 +1,16 @@
 from .models import *
 
 
-def calculateAppointmentSlotOverlaps(interviewerId, candidateId):
+def calculateAppointmentSlotOverlaps(interviewerIds, candidateId):
     candidateSlots = CandidateAppointmentSlot.objects.filter(candidate=candidateId)
-    interviewerSlots = InterviewerAppointmentSlot.objects.filter(interviewer=interviewerId)
+    interviewerSlots = InterviewerAppointmentSlot.objects.filter(interviewer__in=interviewerIds)
 
     result = []
-    for interviewerSlot in interviewerSlots:
-        overlappingCandidateSlots = list(
-            filter(lambda candidateslot: dateRangeIsInDateRange(interviewerSlot, candidateslot), candidateSlots)
+    for candidateSlot in candidateSlots:
+        overlappingInterviewerSlots = list(
+            filter(lambda interviewerSlot: dateRangeIsInDateRange(candidateSlot, interviewerSlot), interviewerSlots)
         )
-        result.append((interviewerSlot, overlappingCandidateSlots))
+        result.append((candidateSlot, overlappingInterviewerSlots))
 
     return result
 
