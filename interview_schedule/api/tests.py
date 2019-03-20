@@ -1,38 +1,40 @@
 from django.test import TestCase
+from django.utils.timezone import make_aware
 from .models import *
 from .validators import *
 from .appointmentslots import calculateAppointmentSlotOverlaps
 import datetime
 
 
+
 class ValidationTestCase(TestCase):
     def test_begin_must_before_end(self):
-        begin = datetime.datetime.strptime('2018-06-29T08:15', '%Y-%m-%dT%H:%M')
-        end = datetime.datetime.strptime('2018-06-28T08:15', '%Y-%m-%dT%H:%M')
+        begin = make_aware(datetime.datetime.strptime('2018-06-29T08:15', '%Y-%m-%dT%H:%M'))
+        end = make_aware(datetime.datetime.strptime('2018-06-28T08:15', '%Y-%m-%dT%H:%M'))
         self.assertRaises(serializers.ValidationError, beginIsBeforeEnd, begin, end)
 
     def test_begin_is_before_end(self):
-        end = datetime.datetime.strptime('2018-06-29T08:15', '%Y-%m-%dT%H:%M')
-        begin = datetime.datetime.strptime('2018-06-28T08:15', '%Y-%m-%dT%H:%M')
+        end = make_aware(datetime.datetime.strptime('2018-06-29T08:15', '%Y-%m-%dT%H:%M'))
+        begin = make_aware(datetime.datetime.strptime('2018-06-28T08:15', '%Y-%m-%dT%H:%M'))
         result = beginIsBeforeEnd(begin, end)
         self.assertEqual(True, result)
 
     def test_date_must_be_at_full_hour(self):
-        date = datetime.datetime.strptime('2018-06-29T08:15', '%Y-%m-%dT%H:%M')
+        date = make_aware(datetime.datetime.strptime('2018-06-29T08:15', '%Y-%m-%dT%H:%M'))
         self.assertRaises(serializers.ValidationError, mustBeAtFullHour, date)
 
     def test_date_is_at_full_hour(self):
-        date = datetime.datetime.strptime('2018-06-29T08:00', '%Y-%m-%dT%H:%M')
+        date = make_aware(datetime.datetime.strptime('2018-06-29T08:00', '%Y-%m-%dT%H:%M'))
         self.assertEqual(mustBeAtFullHour(date), date)
 
 
 class AppointmentSlotOverlapTest(TestCase):
-    begin1 = datetime.datetime.strptime('2018-06-28T08:00', '%Y-%m-%dT%H:%M')
-    end1 = datetime.datetime.strptime('2018-06-30T08:00', '%Y-%m-%dT%H:%M')
-    begin2 = datetime.datetime.strptime('2018-06-28T08:00', '%Y-%m-%dT%H:%M')
-    end2 = datetime.datetime.strptime('2018-06-29T08:00', '%Y-%m-%dT%H:%M')
-    begin3 = datetime.datetime.strptime('2018-06-27T08:00', '%Y-%m-%dT%H:%M')
-    end3 = datetime.datetime.strptime('2018-06-30T08:00', '%Y-%m-%dT%H:%M')
+    begin1 = make_aware(datetime.datetime.strptime('2018-06-28T08:00', '%Y-%m-%dT%H:%M'))
+    end1 = make_aware(datetime.datetime.strptime('2018-06-30T08:00', '%Y-%m-%dT%H:%M'))
+    begin2 = make_aware(datetime.datetime.strptime('2018-06-28T08:00', '%Y-%m-%dT%H:%M'))
+    end2 = make_aware(datetime.datetime.strptime('2018-06-29T08:00', '%Y-%m-%dT%H:%M'))
+    begin3 = make_aware(datetime.datetime.strptime('2018-06-27T08:00', '%Y-%m-%dT%H:%M'))
+    end3 = make_aware(datetime.datetime.strptime('2018-06-30T08:00', '%Y-%m-%dT%H:%M'))
     candidateId = None
     interviewerId = None
     expectedInterviewerSlot = None
