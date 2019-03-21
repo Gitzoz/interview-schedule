@@ -23,6 +23,13 @@ Start the development server:
 
 `python manage.py runserver`
 
+Docker support: 
+
+``` 
+docker build -t interview-schedule .
+docker run -it -p 8000:8000 --name schedule interview-schedule
+```
+
 ## Api
 
 After starting the development server you have a browseable api under: 
