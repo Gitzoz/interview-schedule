@@ -28,6 +28,9 @@ Start the development server:
 After starting the development server you have a browseable api under: 
 `http://127.0.0.1:8000/api/`
 
+### /api/swagger
+A swagger ui for the api 
+
 ### /api/candidates/
 Lists all candidates and creating new candidates.
 
