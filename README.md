@@ -17,6 +17,8 @@ Run tests:
 
 Database migration : 
 
+`python manage.py makemigrations api`
+
 `python manage.py migrate`
 
 Start the development server: 
